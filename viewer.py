@@ -93,8 +93,8 @@ class Viewer:
             raise RuntimeError("Should've initialized plots")
         if self.plt_dim != (1,1):
             is_table_view = True
-            x = range(0, self.surf.x_grid)
         if isinstance(self.surf, HeatSurface1D):
+            x = range(0, self.surf.x_grid)
             extent = [x[0]-(x[1]-x[0])/2., x[-1]+(x[1]-x[0])/2.,0,5]
             hide_y_ticks = True
          

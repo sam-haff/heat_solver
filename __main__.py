@@ -6,10 +6,10 @@ import click
 from .viewer import Viewer
 
 @click.group()
-@click.option('--k', type=click.FloatRange(0.01, max_open=True), help='Conductivity coefficient.', prompt=True)
+@click.option('--k', type=click.FloatRange(0.01, max_open=True), help='Conductivity coefficient.', prompt='Thermal diffusivity constant')
 @click.option('--iters_num', type=click.IntRange(1, max_open=True), default=None, help='Number of simulation iterations overall')
-@click.option('--iters_per_vis', type=click.IntRange(1, max_open=True), help='Number of iterations per visualisation. Total number of visulisations/plots is then (iters_num/iters_per_vis + 1).', prompt=True)
-@click.option('--num_vis', type=click.IntRange(1, max_open=True), help='Number of visualisations generated. Total number of computed simulation iterations is then (num_vis*iters_per_vis)', prompt=True)
+@click.option('--iters_per_vis', type=click.IntRange(1, max_open=True), help='Number of iterations per visualisation. Total number of visulisations/plots is then (iters_num/iters_per_vis + 1).', prompt='Simulation time steps per visualisation')
+@click.option('--num_vis', type=click.IntRange(1, max_open=True), help='Number of visualisations generated. Total number of computed simulation iterations is then (num_vis*iters_per_vis)', prompt='Number of desired visualisations')
 @click.option('--vis_num_rows', type=click.IntRange(1, max_open=True), default=None, help='Visualize all plots on one page in <vis_num_rows> rows. Number of cols is ',)
 @click.pass_context
 def cli(ctx, k, iters_num, iters_per_vis, num_vis, vis_num_rows):
@@ -35,10 +35,10 @@ def unpack_cli_ctx(ctx):
 
 @cli.command('simulate1D')
 @click.option('--x_grid', type=click.IntRange(3, 260), default=20, help='Simulation grid resolution on axis X.')
-@click.option('--extent_x', type=click.FloatRange(1.0, max_open=True), help='Physical surface width.', prompt=True)
-@click.option('--T_left', type=float, help='Boundary condition(constant temperature) on the left side of the surface.', prompt=True)
-@click.option('--T_right', type=float, help='Boundary condition(constant temperature) on the right side of the surface. Only applicable to 2D simulation.', prompt=True)
-@click.option('--T_mid', type=float, help='Starting temperature inside the boundary(simulated surface part).', prompt=True)
+@click.option('--extent_x', type=click.FloatRange(1.0, max_open=True), help='Physical surface width.', prompt='Physical width')
+@click.option('--T_left', type=float, help='Boundary condition(constant temperature) on the left side of the surface.', prompt='Boundary(is not changed under simulation) temperature on the left')
+@click.option('--T_right', type=float, help='Boundary condition(constant temperature) on the right side of the surface. Only applicable to 2D simulation.', prompt='Boundary temperature on the right')
+@click.option('--T_mid', type=float, help='Starting temperature inside the boundary(simulated surface part).', prompt='Starting surface temperature')
 @click.pass_context
 def init_sim_1D(ctx, x_grid, extent_x, t_left, t_right, t_mid):
     k, _, iters_per_vis, iters_num, vis_num_rows = unpack_cli_ctx(ctx)
@@ -51,13 +51,13 @@ def init_sim_1D(ctx, x_grid, extent_x, t_left, t_right, t_mid):
 @cli.command('simulate2D')
 @click.option('--x_grid', type=click.IntRange(3, 60), default=20, help='Simulation grid resolution on axis X.')
 @click.option('--y_grid', type=click.IntRange(3, 60), default=20, help='Simulation grid resolution on axis Y.')
-@click.option('--extent_x', type=click.FloatRange(1.0, max_open=True), help='Physical surface width.', prompt=True)
-@click.option('--extent_y', type=click.FloatRange(1.0, max_open=True), help='Physical surface height.', prompt=True)
-@click.option('--T_left', type=float, help='Boundary condition(constant temperature) on the left side of the surface.', prompt=True)
-@click.option('--T_right', type=float, help='Boundary condition(constant temperature) on the right side of the surface. Only applicable to 2D simulation.', prompt=True)
-@click.option('--T_top', type=float, help='Boundary condition(constant temperature) on the top side of the surface. Only applicable to 2D simulation.', prompt=True)
-@click.option('--T_bot', type=float, help='Boundary condition(constant temperature) on the bottom side of the surface.', prompt=True)
-@click.option('--T_mid', type=float, help='Starting temperature inside the boundary(simulated surface part).', prompt=True)
+@click.option('--extent_x', type=click.FloatRange(1.0, max_open=True), help='Physical surface width.', prompt='Physical width')
+@click.option('--extent_y', type=click.FloatRange(1.0, max_open=True), help='Physical surface height.', prompt='Physical height')
+@click.option('--T_left', type=float, help='Boundary condition(constant temperature) on the left side of the surface.', prompt='Boundary(is not changed under simulation) temperature on the left')
+@click.option('--T_right', type=float, help='Boundary condition(constant temperature) on the right side of the surface. Only applicable to 2D simulation.', prompt='Boundary(is not changed under simulation) temperature on the right')
+@click.option('--T_top', type=float, help='Boundary condition(constant temperature) on the top side of the surface. Only applicable to 2D simulation.', prompt='Boundary(is not changed under simulation) temperature on the top')
+@click.option('--T_bot', type=float, help='Boundary condition(constant temperature) on the bottom side of the surface.', prompt='Boundary(is not changed under simulation) temperature on the bottom')
+@click.option('--T_mid', type=float, help='Starting temperature inside the boundary(simulated surface part).', prompt='Starting surface temperature')
 @click.pass_context
 def init_sim_2D(ctx, x_grid, y_grid, extent_x, extent_y, t_left, t_right, t_top, t_bot, t_mid):
     k, _, iters_per_vis, iters_num, vis_num_rows = unpack_cli_ctx(ctx)
