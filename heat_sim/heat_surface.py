@@ -7,6 +7,7 @@ class HeatSurface1D:
         self.T_left = T_left
         self.T_right = T_right
         self.T_middle = T_middle
+        self.max_heat = max(self.T_left, self.T_middle, self.T_right)
         self.x_grid = x_grid
         self.x_extent = x_extent
         self.dt = dt
@@ -42,10 +43,12 @@ class HeatSurface1D:
         T = self._make_init_T()
         P = self._make_P()
 
-        for t in range(0, iterations):
+        yield T
+        for t in range(1, iterations + 1):
+            T = np.linalg.solve(P, T)
             if ((t % yield_step) == 0):
                 yield T
-            T = np.linalg.solve(P, T)
+
 
 class HeatSurface2D:
     def __init__(self, x_extent, x_grid, y_extent, y_grid, T_boundary_top, T_boundary_bot, T_boundary_left, T_boundary_right, T_init_mid, dt, k_coef):
@@ -61,6 +64,7 @@ class HeatSurface2D:
         self.T_boundary_left = T_boundary_left
         self.T_boundary_right = T_boundary_right
         self.T_init_mid = T_init_mid
+        self.max_heat = max(self.T_boundary_top, self.T_boundary_bot, self.T_boundary_left, self.T_boundary_right, self.T_init_mid)
         self.k_coef = k_coef
         #diffs
         self.dt = dt
@@ -129,7 +133,8 @@ class HeatSurface2D:
         T = self._make_init_T()
         P = self._make_P()
 
-        for t in range(0, iterations):
+        yield T.reshape((-1, self.x_grid))
+        for t in range(1, iterations + 1):
+            T = np.linalg.solve(P, T)
             if ((t % yield_step) == 0):
                 yield T.reshape((-1, self.x_grid))
-            T = np.linalg.solve(P, T)
