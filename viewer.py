@@ -13,12 +13,20 @@ class Viewer:
         v.simulation_results = results
         return v
 
+
     @classmethod
-    def from_surface(cls, surf, iters_n, iters_per_vis, plt_num_rows=None):
+    def from_surface(cls, surf, iters_n, iters_per_vis, *, include_boundaries=True, plt_num_rows=None):
+        def _rem_boundaries(res):
+            if len(res.shape) == 1:
+                return res[1:len(res)-1]
+            if len(res.shape) != 2:
+                raise RuntimeError('Malformed result')
+            return res[1:res.shape[0]-1, 1:res.shape[1]-1]
+
         v = Viewer()
         sim_results = []
         for sim_res in surf.sim(iters_n, iters_per_vis):
-            res = sim_res
+            res = sim_res if include_boundaries else _rem_boundaries(sim_res)
             if len(sim_res.shape) == 1:
                 res = sim_res[np.newaxis, :]
             sim_results.append(res)
@@ -86,6 +94,8 @@ class Viewer:
         plt.show()
 
     def show(self):
+        if not self.surf:
+            raise RuntimeError("Not properly initialized")
         extent = None
         is_table_view = False
         hide_y_ticks = False

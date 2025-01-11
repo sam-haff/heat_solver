@@ -43,11 +43,11 @@ class HeatSurface1D:
         T = self._make_init_T()
         P = self._make_P()
 
-        yield T
+        yield T 
         for t in range(1, iterations + 1):
             T = np.linalg.solve(P, T)
             if ((t % yield_step) == 0):
-                yield T
+                yield T 
 
 
 class HeatSurface2D:
@@ -63,8 +63,11 @@ class HeatSurface2D:
         self.T_boundary_bot = T_boundary_bot
         self.T_boundary_left = T_boundary_left
         self.T_boundary_right = T_boundary_right
+        #initial temp
         self.T_init_mid = T_init_mid
+        #max heat for normalization purposes
         self.max_heat = max(self.T_boundary_top, self.T_boundary_bot, self.T_boundary_left, self.T_boundary_right, self.T_init_mid)
+        #thermal diffusivity
         self.k_coef = k_coef
         #diffs
         self.dt = dt
@@ -72,7 +75,11 @@ class HeatSurface2D:
         self._dy = y_extent/y_grid
 
     def _make_init_T(self):
-        '''Create initial temperature vector(flattened T/grid cell)'''
+        '''
+        Create initial temperature vector(flattened T/grid cell)
+        T = [ T_0_0, T_0_1, .., T_0_xgr, ..., T_ygr_0, T_ygr_1, ..., T_ygr_xgr ],
+        where xgr=x_grid-1, ygr=y_grid-1
+        '''
         T = [self.T_boundary_top] * self.x_grid # top boundary
         for _ in range(1, self.y_grid - 1):
             ls = [self.T_init_mid] * self.x_grid
@@ -129,7 +136,11 @@ class HeatSurface2D:
         return np.array(P)
     
     def sim(self, iterations, yield_step = 1):
-        '''Simulation by steps. Produces unflattened T(t+1) matrix.'''
+        '''
+        Simulation by steps. Produces unflattened T(t+1) matrix.
+        T(t+1)=[[T_0_0, T_0_1, .., T_0_xgr], [T_1_0, T_1_1, ..., T_1_xgr], ..., [T_ygr_0, T_ygr_1, .., T_ygr_xgr]],
+        where xgr=x_grid-1, ygr=y_grid-1
+        '''
         T = self._make_init_T()
         P = self._make_P()
 
